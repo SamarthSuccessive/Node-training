@@ -37,7 +37,9 @@ function App() {
             <Route path="/edit/:id" element={<Privateroutes auth={auth} />}>
               <Route path="/edit/:id" element={<Edit />}></Route>
             </Route>
+
             <Route path="/signup" element={<Signup />}></Route>
+            <Route path="*" element={<div>Page Not Found</div>}></Route>
           </Routes>
         </div>
       </Mycontext.Provider>
