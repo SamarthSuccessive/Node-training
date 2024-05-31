@@ -10,13 +10,13 @@ const newUser=await User.create({
     email:email,
     password:hashedPass
 })
-res.json({
+res.status(200).json({
     newUser:newUser
 })
 
 }
 catch(err){
-res.json({
+res.status(500).json({
     message:err.message
 })
 }

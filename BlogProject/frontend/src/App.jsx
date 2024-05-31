@@ -41,7 +41,7 @@ function App() {
           </Routes>
         </div>
       </Mycontext.Provider>
-      {console.log(auth)}
+      {/* {console.log(auth)} */}
     </>
   );
 }

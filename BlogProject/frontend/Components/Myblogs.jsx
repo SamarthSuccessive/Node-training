@@ -13,7 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { Favorite, Edit,Delete } from "@mui/icons-material";
 
 const Myblogs = () => {
-  const { accountname, accountemail } = useContext(Mycontext);
+  const {  accountemail } = useContext(Mycontext);
   const [blogs, setBlogs] = useState([]);
   const navigate = useNavigate();
   const [countlike, setcountlike] = useState([]);
@@ -36,7 +36,7 @@ const Myblogs = () => {
 
           if (response.ok) {
             const data = await response.json();
-            console.log(accountemail);
+            // console.log(accountemail);
             const blogs = data.blogs.map((blog) => ({
               ...blog,
               changecolor: blog.likes.includes(accountemail) ? true : false,
@@ -57,7 +57,7 @@ const Myblogs = () => {
     } else {
       navigate("/");
     }
-  }, [accountname]);
+  }, []);
 
   const handleEditButton = (blogId) => {
     navigate(`/edit/${blogId}`);
@@ -96,11 +96,17 @@ const Myblogs = () => {
           }
 
           console.log("update successfully");
-        } else {
+        } 
+        else if (response.status === 401) {
+          sessionStorage.removeItem("token");
+          sessionStorage.removeItem("tokenExpiry");
+          navigate("/");
+        }
+        else {
           alert("Error in button like");
         }
       } catch (error) {
-        console.log("Error comming");
+        console.error("Error comming");
       }
     } else {
       navigate("/");
@@ -121,14 +127,21 @@ const Myblogs = () => {
           },
         });
 
+
         if (response.status===200) {
           setBlogs(blogs.filter((blog) => blog._id !== blogId));
           console.log("Post deleted successfully");
-        } else {
+        } 
+        else if (response.status === 401) {
+          sessionStorage.removeItem("token");
+          sessionStorage.removeItem("tokenExpiry");
+          navigate("/");
+        }
+        else {
           alert("Error in deleting post");
         }
       } catch (error) {
-        console.log("Error deleting post:", error);
+        console.error("Error deleting post:", error);
       }
     } else {
       navigate("/");

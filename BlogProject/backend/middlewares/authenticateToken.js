@@ -1,3 +1,4 @@
+const users=require('../models/userSchema');
 const jwt = require('jsonwebtoken');
 const authenticateToken = (req, res, next) => {
       const authHeader = req.headers['authorization'];
@@ -5,12 +6,13 @@ const authenticateToken = (req, res, next) => {
   if (!token) {
     return res.status(401).json({ message: 'Access denied. No token provided.' });
   }
-  jwt.verify(token, process.env.SECRET_KEY, (err, data) => {
+  jwt.verify(token, process.env.SECRET_KEY, async(err, data) => {
     if (err) {
-      return res.status(403).json({ message: 'Invalid or expired token.' });
+      return res.status(401).json({ message: 'Invalid or expired token.' });
     }
     req.body.email=data.email;
-    next();
+      next();
+
   });
 };
 

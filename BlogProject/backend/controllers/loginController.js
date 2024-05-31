@@ -14,7 +14,6 @@ const loginController = async (req, res) => {
       const tokenDuration = 15 * 60 * 1000;
       const token = jwt.sign({ email: user.email }, process.env.SECRET_KEY,{ expiresIn: '15m' });
       res.status(200).json({
-        status: "SUCCESS",
         email:user.email,
         name:user.name,
         token: token,

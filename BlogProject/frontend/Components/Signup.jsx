@@ -78,8 +78,8 @@ const navigate=useNavigate();
           const errorData = await response.json();
           setSignupError(errorData.message || 'Signup failed');
         } else {
-          const data = await response.json();
-          console.log('Signup successful:', data);
+          // const data = await response.json();
+          alert('Signup successful:');
           setSignupError('');
           navigate('/');
         }

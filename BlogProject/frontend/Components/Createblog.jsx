@@ -10,7 +10,7 @@ import {
   FormControl,
   IconButton,
   LinearProgress,
-  Typography
+  Typography,
 } from "@mui/material";
 import { Attachment as AttachIcon } from "@mui/icons-material";
 import { Mycontext } from "../Context/Createcontext";
@@ -21,7 +21,7 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import app from "../firebase";
- 
+
 const CreatePost = () => {
   const { accountname } = useContext(Mycontext);
   const initialData = {
@@ -37,10 +37,9 @@ const CreatePost = () => {
   const [file, setfile] = useState("");
   const fileInputElement = useRef(null);
   const [imgPerc, setImgPerc] = useState(0);
-  const [headerToken,setHeaderToken]=useState("");
-  
+  const [headerToken, setHeaderToken] = useState("");
 
-  console.log(post);
+  // console.log(post);
   // console.log(file);
 
   useEffect(() => {
@@ -72,7 +71,7 @@ const CreatePost = () => {
         const progress =
           (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
 
-        setImgPerc(Math.round(progress)); 
+        setImgPerc(Math.round(progress));
 
         switch (snapshot.state) {
           case "paused":
@@ -86,10 +85,10 @@ const CreatePost = () => {
         }
       },
       (error) => {
-        console.log(error);
+        console.error(error);
         switch (error.code) {
           case "storage/unauthorized":
-            console.log(error);
+            console.error(error);
             break;
           case "storage/canceled":
             break;
@@ -112,25 +111,22 @@ const CreatePost = () => {
     ? post.image
     : "https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
-  
-
   const handleTitle = (e) => {
-    console.log(e.target.value);
+    // console.log(e.target.value);
     setPost({ ...post, title: e.target.value });
   };
 
-
-  const checkwordcount=(str)=>{
+  const checkwordcount = (str) => {
     return str.trim().split(/\s+/).length;
-
-  }
+  };
 
   const handlediscription = (e) => {
-
-    checkwordcount(post.discription)>=200?alert("Word Count exceeded (should be in 200 only)"):setPost({ ...post, discription: e.target.value });
+    checkwordcount(post.discription) >= 200
+      ? alert("Word Count exceeded (should be in 200 only)")
+      : setPost({ ...post, discription: e.target.value });
     // setPost({ ...post, discription: e.target.value });
   };
- 
+
   const handleFileSelect = (e) => {
     setfile(e.target.files[0]);
     setPost({ ...post, image: URL.createObjectURL(e.target.files[0]) });
@@ -156,7 +152,7 @@ const CreatePost = () => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          'Authorization': headerToken,
+          Authorization: headerToken,
         },
         body: JSON.stringify(post),
       });
@@ -169,14 +165,16 @@ const CreatePost = () => {
         const data = await response.json();
         console.log("Post created successfully:", data);
         navigate("/myblogs");
-      } else if(response.status=== 400) {
-        alert('Please fill all the fields properly');
+      } else if (response.status === 400) {
+        alert("Please fill all the fields properly");
+      } else {
+        console.error("Internal server Error");
       }
     } catch (error) {
-      console.log("Error Comming", error);
+      console.error("Error Comming", error);
     }
   };
-  
+
   return (
     <Box sx={{ margin: { xs: 0, md: "50px 100px" } }}>
       <Box
@@ -190,7 +188,7 @@ const CreatePost = () => {
         }}
       />
       {file && (
-        <Box sx={{ width: '100%', marginTop: '10px' }}>
+        <Box sx={{ width: "100%", marginTop: "10px" }}>
           <LinearProgress variant="determinate" value={imgPerc} />
           <Typography variant="body2" color="textSecondary" align="center">
             {imgPerc}%

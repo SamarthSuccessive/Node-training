@@ -28,6 +28,11 @@ const Edit = () => {
             },
           });
 
+          if (response.status === 401) {
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("tokenExpiry");
+            navigate("/");
+          }
           if (!response.ok) {
             throw new Error("Failed to fetch blog");
           }
@@ -79,11 +84,17 @@ const Edit = () => {
       if (response.status===200) {
         alert("Blog updated !!");
         navigate("/myblogs");
-      } else {
+      }
+      else if (response.status === 401) {
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("tokenExpiry");
+        navigate("/");
+      }
+       else {
         alert("Blog not updated");
       }
     } catch (error) {
-      console.log("Error updating blog:", error);
+      console.error("Error updating blog:", error);
     }
   };
 

@@ -7,7 +7,7 @@ const Privateroutes = ({auth}) => {
   <>
   <Outlet/>
   </>
-  :<Navigate replace to='/' />
+  :<Navigate to='/' />
 
 }
 

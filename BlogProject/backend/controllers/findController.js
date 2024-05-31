@@ -3,12 +3,12 @@ const post = require('../models/postSchema');
 const findblog = async (req, res) => {
   const { id } = req.params; 
   if (!id) {
-    return res.status(404).json({ message: "Not found params" });
+    return res.status(400).json({ message: "Not found params" });
   }
   const { email } = req.body;
   try {
     const blog = await post.findOne({ _id: id, email: email });
-    console.log(blog);
+    // console.log(blog);
     if (blog) {
       return res.status(200).json({ success: "true", blog });
     } else {

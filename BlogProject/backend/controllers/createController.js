@@ -1,7 +1,7 @@
 const Post=require('../models/postSchema');
 const createController=async(req,res)=>{
 const {title,discription,firebaseimage,user,email}=req.body;
-console.log(req.body);
+// console.log(req.body);
 if(!title || !discription || !firebaseimage || !user || !email)
 {
     return res.status(400).json({error:"Empty fields"});
@@ -15,7 +15,7 @@ try{
     });
 }catch(error)
 {
-    return res.status(400);
+    return res.status(500);
 }
 
 }

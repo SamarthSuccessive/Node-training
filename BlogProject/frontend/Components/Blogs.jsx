@@ -53,7 +53,13 @@ const Blogs = () => {
         const arr = newBlogs.map((blog) => blog.likes.length);
         setCountlike((prevCounts) => [...prevCounts, ...arr]);
         newBlogs.length > 0?setHasMore(true):setHasMore(false);
-      } else {
+      }
+      else if (response.status === 401) {
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("tokenExpiry");
+        navigate("/");
+      }
+       else {
         console.error("Error fetching blogs:", response.statusText);
       }
     } catch (error) {
@@ -62,7 +68,7 @@ const Blogs = () => {
   };
 
   const fetchMoreData = () => {
-    console.log("hi")
+    // console.log("hi")
       const newPage = page + 1;
       fetchBlogs(newPage);
       setPage(newPage);
@@ -101,11 +107,17 @@ const Blogs = () => {
             setCountlike(newCountlike);
           }
           console.log("Update successfully");
-        } else {
+        } 
+          else if (response.status === 401) {
+        sessionStorage.removeItem("token");
+        sessionStorage.removeItem("tokenExpiry");
+        navigate("/");
+      }
+        else {
           alert("Error in button like");
         }
       } catch (error) {
-        console.log("Error occurred");
+        console.error("Error occurred");
       }
     } else {
       navigate("/");

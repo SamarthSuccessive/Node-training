@@ -3,7 +3,7 @@ const updateController = async (req, res) => {
   const { email, title, discription } = req.body;
   const { id } = req.params;
   if (!id) {
-    return res.status(404).json({ message: "Not found params" });
+    return res.status(400).json({ message: "Not found params" });
   }
   try {
     const result = await post.updateOne(

@@ -29,5 +29,5 @@ router.patch("/update/:id", authenticateToken, updateController);
 
 router.get("/blogs", authenticateToken, blogsController);
 
-router.delete('/delete/:id',deleteController);
+router.delete('/delete/:id',authenticateToken,deleteController);
 module.exports = router;
