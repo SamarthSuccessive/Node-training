@@ -7,7 +7,7 @@ const loginController = async (req, res) => {
   const user = await User.findOne({ email: email });
   if(!user)
   {
-    return res.status(400).json({msg :'username not exist'})
+    return res.status(400).json({msg :'username not exist'}) ///changes
   }
   try {
     if (await bcrypt.compare(password,user.password)) {
@@ -21,13 +21,13 @@ const loginController = async (req, res) => {
       });
     }
   else{
-    return res.status(400).json({status: "Fail",msg:'Password Do not match'});
+    return res.status(400).json({status: "Fail",msg:'Password Do not match'}); //changes
   }
 }
   catch (err) {
     return res.status(500).json({
       status: "Fail",
-      msg: `Error in Login`,
+      msg: `Error in Login`,  //internal err.message
     });
   }
 }

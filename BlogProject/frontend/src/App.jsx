@@ -4,7 +4,7 @@ import "./App.css";
 import { Route, Routes } from "react-router-dom";
 import { Mycontext } from "../Context/Createcontext";
 import { useState } from "react";
-import Header from "../Components/Header";
+// import Header from "../Components/Header";
 import Blogs from "../Components/Blogs";
 import Privateroutes from "../Components/Privateroutes";
 import Myblogs from "../Components/Myblogs";
@@ -14,27 +14,25 @@ import Edit from "../Components/Edit";
 function App() {
   const [accountname, setaccountname] = useState("");
   const [accountemail, setaccountemail] = useState("");
-  const [auth, setauth] = useState(false);
-
+ 
   return (
     <>
       <Mycontext.Provider
         value={{ accountname, setaccountname, accountemail, setaccountemail }}
       >
-        {auth ? <Header setauth={setauth} /> : <></>}
-        <div>
+                <div>
           <Routes>
-            <Route path="/" element={<Login setauth={setauth} />}></Route>
-            <Route path="/blogs" element={<Privateroutes auth={auth} />}>
+            <Route path="/" element={<Login />}></Route>
+            <Route path="/blogs" element={<Privateroutes  />}>
               <Route path="/blogs" element={<Blogs />}></Route>
             </Route>
-            <Route path="/myblogs" element={<Privateroutes auth={auth} />}>
+            <Route path="/myblogs" element={<Privateroutes  />}>
               <Route path="/myblogs" element={<Myblogs />}></Route>
             </Route>
-            <Route path="/create" element={<Privateroutes auth={auth} />}>
+            <Route path="/create" element={<Privateroutes  />}>
               <Route path="/create" element={<Createblog />}></Route>
             </Route>
-            <Route path="/edit/:id" element={<Privateroutes auth={auth} />}>
+            <Route path="/edit/:id" element={<Privateroutes  />}>
               <Route path="/edit/:id" element={<Edit />}></Route>
             </Route>
 

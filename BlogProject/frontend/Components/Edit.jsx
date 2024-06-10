@@ -2,25 +2,24 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Box, TextareaAutosize, Button, InputBase, FormControl } from "@mui/material";
+import Header from "./Header";
+import { ToastContainer,toast } from "react-toastify";
 // import { Mycontext } from "../Context/Createcontext";
 
 const Edit = () => {
 //   const { accountname } = useContext(Mycontext);
   const { id } = useParams();
   const navigate = useNavigate();
- 
+
   const [image, setImage] = useState("");
   const [title, setTitle] = useState("");
   const [discription, setDescription] = useState("");
 
   useEffect(() => {
     const fetchBlog = async () => {
-      const token = sessionStorage.getItem("token");
-      const tokenExpiry = sessionStorage.getItem("tokenExpiry");
-      const currentTime = new Date().getTime();
-
-      if (token && tokenExpiry && currentTime < tokenExpiry) {
+     
         try {
+          const token = localStorage.getItem("token");
           const response = await fetch(`http://localhost:4000/v1/findblog/${id}`, {
             method: "GET",
             headers: {
@@ -29,14 +28,13 @@ const Edit = () => {
           });
 
           if (response.status === 401) {
-            sessionStorage.removeItem("token");
-            sessionStorage.removeItem("tokenExpiry");
+            localStorage.removeItem("token");
             navigate("/");
           }
+
           if (!response.ok) {
             throw new Error("Failed to fetch blog");
           }
-
           const data = await response.json();
           setImage(data.blog.firebaseimage);
           setTitle(data.blog.title);
@@ -45,11 +43,8 @@ const Edit = () => {
           console.error("Error fetching blog:", error);
           navigate("/");
         }
-      } else {
-        navigate("/");
-      }
     };
-
+    
     fetchBlog();
   }, [id]);
 
@@ -62,16 +57,10 @@ const Edit = () => {
   };
 
   const handleSubmit = async () => {
-    const tokenExpiry = sessionStorage.getItem("tokenExpiry");
-    const currentTime = new Date().getTime();
-    const token = sessionStorage.getItem("token");
-    if (!tokenExpiry || currentTime >= tokenExpiry) {
-      console.log("Token is expired");
-      navigate("/");
-      return;
-    }
 
     try {
+      const token = localStorage.getItem("token");
+
       const response = await fetch(`http://localhost:4000/v1/update/${id}`, {
         method: "PATCH",
         headers: {
@@ -82,16 +71,17 @@ const Edit = () => {
       });
 
       if (response.status===200) {
-        alert("Blog updated !!");
+        // alert("Blog updated !!");
+        toast.success("Blog updated !!");
         navigate("/myblogs");
       }
+
       else if (response.status === 401) {
-        sessionStorage.removeItem("token");
-        sessionStorage.removeItem("tokenExpiry");
+        localStorage.removeItem("token");
         navigate("/");
       }
        else {
-        alert("Blog not updated");
+        toast.error("Blog not updated");
       }
     } catch (error) {
       console.error("Error updating blog:", error);
@@ -100,6 +90,8 @@ const Edit = () => {
 
   return (
     <Box sx={{ margin: { xs: 0, md: "50px 100px" } }}>
+      <Header />
+      <ToastContainer position="top-right"/>
       <Box
         component="img"
         src={image}

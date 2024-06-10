@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useRef, useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
 import {
   Box,
   TextareaAutosize,
@@ -21,6 +20,9 @@ import {
   getDownloadURL,
 } from "firebase/storage";
 import app from "../firebase";
+import Header from "./Header";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const CreatePost = () => {
   const { accountname } = useContext(Mycontext);
@@ -31,35 +33,17 @@ const CreatePost = () => {
     firebaseimage: "",
     user: accountname,
   };
-
   const navigate = useNavigate();
   const [post, setPost] = useState(initialData);
   const [file, setfile] = useState("");
   const fileInputElement = useRef(null);
   const [imgPerc, setImgPerc] = useState(0);
-  const [headerToken, setHeaderToken] = useState("");
-
-  // console.log(post);
-  // console.log(file);
 
   useEffect(() => {
     if (file) {
       uploadFile(file);
     }
   }, [file]);
-
-  useEffect(() => {
-    const token = sessionStorage.getItem("token");
-    const tokenExpiry = sessionStorage.getItem("tokenExpiry");
-    const currentTime = new Date().getTime();
-
-    if (token && tokenExpiry && currentTime < tokenExpiry) {
-      // setPost((prevPost) => ({ ...prevPost, token }));
-      setHeaderToken(token);
-    } else {
-      navigate("/");
-    }
-  }, []);
 
   const uploadFile = (file) => {
     const storage = getStorage(app);
@@ -100,7 +84,6 @@ const CreatePost = () => {
       },
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
-          // console.log("DownloadURL - ", downloadURL);
           setPost({ ...post, firebaseimage: downloadURL });
         });
       }
@@ -112,7 +95,6 @@ const CreatePost = () => {
     : "https://images.unsplash.com/photo-1488190211105-8b0e65b80b4e?q=80&w=2070&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
   const handleTitle = (e) => {
-    // console.log(e.target.value);
     setPost({ ...post, title: e.target.value });
   };
 
@@ -121,10 +103,11 @@ const CreatePost = () => {
   };
 
   const handlediscription = (e) => {
-    checkwordcount(post.discription) >= 200
-      ? alert("Word Count exceeded (should be in 200 only)")
-      : setPost({ ...post, discription: e.target.value });
-    // setPost({ ...post, discription: e.target.value });
+    if (checkwordcount(post.discription) >= 200) {
+      toast.error("Word Count exceeded (should be within 200 words)");
+    } else {
+      setPost({ ...post, discription: e.target.value });
+    }
   };
 
   const handleFileSelect = (e) => {
@@ -139,44 +122,40 @@ const CreatePost = () => {
   };
 
   const handleSubmit = async () => {
-    const tokenExpiry = sessionStorage.getItem("tokenExpiry");
-    const currentTime = new Date().getTime();
-
-    if (!tokenExpiry || currentTime >= tokenExpiry) {
-      console.log("Token is expired");
-      navigate("/");
-      return;
-    }
     try {
+      const token = localStorage.getItem("token");
+
       const response = await fetch("http://localhost:4000/v1/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: headerToken,
+          Authorization: token,
         },
         body: JSON.stringify(post),
       });
 
       if (response.status === 401) {
-        sessionStorage.removeItem("token");
-        sessionStorage.removeItem("tokenExpiry");
+        localStorage.removeItem("token");
         navigate("/");
-      } else if (response.ok) {
-        const data = await response.json();
-        console.log("Post created successfully:", data);
+      } else if (response.status === 200) {
+        // const data = await response.json();
+        toast.success("Post created successfully!");
         navigate("/myblogs");
       } else if (response.status === 400) {
-        alert("Please fill all the fields properly");
+        toast.error("Please fill all the fields properly");
       } else {
-        console.error("Internal server Error");
+        toast.error("Internal server error");
       }
     } catch (error) {
       console.error("Error Comming", error);
+      toast.error("An error occurred. Please try again.");
     }
   };
 
   return (
     <Box sx={{ margin: { xs: 0, md: "50px 100px" } }}>
+      <Header />
+      <ToastContainer position="top-right"/>
       <Box
         component="img"
         src={imageUrl}
@@ -187,6 +166,7 @@ const CreatePost = () => {
           objectFit: "cover",
         }}
       />
+      
       {file && (
         <Box sx={{ width: "100%", marginTop: "10px" }}>
           <LinearProgress variant="determinate" value={imgPerc} />
@@ -195,6 +175,7 @@ const CreatePost = () => {
           </Typography>
         </Box>
       )}
+      
       <FormControl
         sx={{
           marginTop: "10px",
@@ -225,14 +206,13 @@ const CreatePost = () => {
         />
 
         <Button
-          onClick={() => handleSubmit()}
+          onClick={handleSubmit}
           variant="contained"
           color="primary"
           sx={{ color: "#FFFFFF", fontWeight: "bold" }}
         >
           Publish
         </Button>
-        <br />
       </FormControl>
       <TextareaAutosize
         placeholder="Write your blog..."

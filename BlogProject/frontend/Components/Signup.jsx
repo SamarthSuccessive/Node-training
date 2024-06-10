@@ -1,7 +1,9 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import { Container, TextField, Button, Typography, Box, Grid } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Signup = () => {
   const [name, setName] = useState('');
@@ -13,11 +15,11 @@ const Signup = () => {
   const [passwordError, setPasswordError] = useState('');
   const [confirmPasswordError, setConfirmPasswordError] = useState('');
   const [signupError, setSignupError] = useState('');
-
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])/;
 
-const navigate=useNavigate();
+  const navigate = useNavigate();
+
   const validateName = (name) => {
     if (!name) {
       setNameError('Name is required');
@@ -57,6 +59,7 @@ const navigate=useNavigate();
     setConfirmPasswordError('');
     return true;
   };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const isNameValid = validateName(name);
@@ -74,24 +77,26 @@ const navigate=useNavigate();
           body: JSON.stringify({ name, email, password }),
         });
 
-        if (response.status===200) {
+        if (!response.ok) {
           const errorData = await response.json();
           setSignupError(errorData.message || 'Signup failed');
+          toast.error(errorData.message || 'Signup failed');
         } else {
-          // const data = await response.json();
-          alert('Signup successful:');
+          toast.success('Signup successful');
           setSignupError('');
           navigate('/');
         }
       } catch (error) {
         setSignupError('Server error. Please try again later.');
+        toast.error('Server error. Please try again later.');
       }
     }
   };
 
   return (
     <Container maxWidth="sm">
-      <Box mt={2} sx={{ boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.2)',p: 9  }}>
+      <Box mt={2} sx={{ boxShadow: '4px 4px 10px rgba(0, 0, 0, 0.2)', p: 9 }}>
+        <ToastContainer position="top-center" />
         <Typography variant="h4" component="h1" gutterBottom>
           Signup
         </Typography>
@@ -153,10 +158,10 @@ const navigate=useNavigate();
           </Button>
           {signupError && <Typography color="error">{signupError}</Typography>}
         </form>
-        <br/>
+        <br />
         <Grid container>
           <Grid item>
-            <Link to='/'>{`Already have an account? Login up`}</Link>
+            <Link to='/'>{`Already have an account? Login`}</Link>
           </Grid>
         </Grid>
       </Box>

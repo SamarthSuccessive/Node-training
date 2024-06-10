@@ -1,9 +1,9 @@
 import { Outlet,Navigate } from "react-router-dom"
 
 // eslint-disable-next-line react/prop-types
-const Privateroutes = ({auth}) => {
-  const token = sessionStorage.getItem('token');
-  return  auth&&token?
+const Privateroutes = () => {
+  const token = localStorage.getItem('token');
+  return  token?
   <>
   <Outlet/>
   </>

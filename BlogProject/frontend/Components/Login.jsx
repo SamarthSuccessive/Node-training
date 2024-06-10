@@ -9,8 +9,9 @@ import {
 } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { Mycontext } from "../Context/Createcontext";
+import { ToastContainer,toast } from "react-toastify";
 // eslint-disable-next-line react/prop-types
-const Login = ({ setauth }) => {
+const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [emailError, setEmailError] = useState("");
@@ -19,8 +20,7 @@ const Login = ({ setauth }) => {
   const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])/;
   const { setaccountname,setaccountemail } = useContext(Mycontext);
   const navigate = useNavigate();
-  sessionStorage.removeItem("token");
-  sessionStorage.removeItem("tokenExpiry");
+  localStorage.removeItem("token");
 
   const validateEmail = (email) => {
     if (!emailRegex.test(email)) {
@@ -61,21 +61,20 @@ const Login = ({ setauth }) => {
       });
       const data = await response.json();
       if (response.status === 200) {
-        const expiryTime = new Date().getTime() + data.expiresIn;
-        sessionStorage.setItem("token", `Bearer ${data.token}`);
-        sessionStorage.setItem("tokenExpiry", expiryTime);
+        localStorage.setItem("token", `Bearer ${data.token}`);
         setaccountname(data.name);
         setaccountemail(data.email);
-        setauth(true);
         navigate("/blogs");
       } else {
-        alert(`Bad Credentials : ${data.msg}`);
+        toast.error(`Bad Credentials : ${data.msg}`);
       }
     }
   };
   return (
     <Container maxWidth="sm">
       <Box mt={5} sx={{ boxShadow: "4px 4px 10px rgba(0, 0, 0, 0.2)", p: 10 }}>
+      <ToastContainer position="top-center"/>
+
         <Typography variant="h4" component="h1" gutterBottom>
           Login
         </Typography>

@@ -38,13 +38,11 @@ const AccountName = styled(Typography)`
   padding-left: 20px;
 `;
 
-const Header = ({ setauth }) => {
+const Header = () => {
   const navigate = useNavigate();
 
-  const handleClick = async () => {
-    sessionStorage.removeItem("token");
-    sessionStorage.removeItem("tokenExpiry");
-    setauth(false);
+  const handleClick = () => {
+    localStorage.removeItem("token");
     navigate("/");
   };
 

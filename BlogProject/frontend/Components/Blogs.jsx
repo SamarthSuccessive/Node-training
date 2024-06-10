@@ -12,6 +12,8 @@ import { Mycontext } from "../Context/Createcontext";
 import { useNavigate } from "react-router-dom";
 import { Favorite } from "@mui/icons-material";
 import InfiniteScroll from "react-infinite-scroll-component";
+import Header from "./Header";
+import { ToastContainer,toast } from "react-toastify";
 
 const Blogs = () => {
   const { accountname, accountemail } = useContext(Mycontext);
@@ -22,20 +24,12 @@ const Blogs = () => {
   const [countlike, setCountlike] = useState([]);
 
   useEffect(() => {
-    const token = sessionStorage.getItem("token");
-    const tokenExpiry = sessionStorage.getItem("tokenExpiry");
-    const currentTime = new Date().getTime();
-
-    if (token && tokenExpiry && currentTime < tokenExpiry) {
       fetchBlogs();
-    } else {
-      navigate("/");
-    }
   }, [accountname]);
 
-  const fetchBlogs = async (pagenumber ) => {
-    const token = sessionStorage.getItem("token");
+  const fetchBlogs = async (pagenumber=1 ) => {
     try {
+      const token = localStorage.getItem("token");
       const response = await fetch(`http://localhost:4000/v1/blogs?page=${pagenumber}`, {
         method: "GET",
         headers: {
@@ -55,8 +49,7 @@ const Blogs = () => {
         newBlogs.length > 0?setHasMore(true):setHasMore(false);
       }
       else if (response.status === 401) {
-        sessionStorage.removeItem("token");
-        sessionStorage.removeItem("tokenExpiry");
+        localStorage.removeItem("token");
         navigate("/");
       }
        else {
@@ -76,54 +69,46 @@ const Blogs = () => {
   };
 
   const handleLikeButton = async (blogId) => {
-    const token = sessionStorage.getItem("token");
-    const tokenExpiry = sessionStorage.getItem("tokenExpiry");
-    const currentTime = new Date().getTime();
+  try {
+    const token = localStorage.getItem("token");
+    const response = await fetch("http://localhost:4000/v1/like", {
+      method: "PATCH",
+      headers: {
+        Authorization: token,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ blogId, email: accountemail }),
+    });
+   
+    if (response.status === 200) {
+      const data = await response.json();
+      console.log(data);
+      const index = blogs.findIndex((post) => post._id === blogId);
+      if (index !== -1) {
+        const newBlogs = [...blogs];
+        newBlogs[index].changecolor = !newBlogs[index].changecolor;
 
-    if (token && tokenExpiry && currentTime < tokenExpiry) {
-      try {
-        const response = await fetch("http://localhost:4000/v1/like", {
-          method: "PATCH",
-          headers: {
-            Authorization: token,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ blogId }),
-        });
+        // Update the like count based on the new state of changecolor
+        const newCountlike = [...countlike];
+        const newValue = newBlogs[index].changecolor
+          ? countlike[index] + 1
+          : countlike[index] - 1;
+        newCountlike[index] = newValue;
 
-        const data = await response.json();
-        if (data.status === true) {
-          const index = blogs.findIndex((post) => post._id === blogId);
-          if (index !== -1) {
-            const newBlogs = [...blogs];
-            newBlogs[index].changecolor = !newBlogs[index].changecolor;
-            setBlogs(newBlogs);
-
-            const newCountlike = [...countlike];
-            const newValue = blogs[index].changecolor
-              ? countlike[index] + 1
-              : countlike[index] - 1;
-            newCountlike[index] = newValue;
-            setCountlike(newCountlike);
-          }
-          console.log("Update successfully");
-        } 
-          else if (response.status === 401) {
-        sessionStorage.removeItem("token");
-        sessionStorage.removeItem("tokenExpiry");
-        navigate("/");
+        setBlogs(newBlogs);
+        setCountlike(newCountlike);
       }
-        else {
-          alert("Error in button like");
-        }
-      } catch (error) {
-        console.error("Error occurred");
-      }
-    } else {
+      console.log("Update successfully");
+    } else if (response.status === 401) {
+      localStorage.removeItem("token");
       navigate("/");
+    } else {
+      toast.error("Error in button like");
     }
-  };
-
+  } catch (error) {
+    console.error("Error occurred", error);
+  }
+};
   return (
     <Box
       sx={{
@@ -133,6 +118,8 @@ const Blogs = () => {
         marginTop: "40px",
       }}
     >
+      <Header/>
+      <ToastContainer position="top-right"/>
       <InfiniteScroll
         dataLength={blogs.length}
         next={fetchMoreData}

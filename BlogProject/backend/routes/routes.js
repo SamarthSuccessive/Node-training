@@ -1,33 +1,40 @@
 const express = require("express");
 const router = express.Router();
-const signupController = require("../controllers/signupController");
-const loginController = require("../controllers/loginController");
-const validateUser = require("../middlewares/validateUser");
+const userController = require("../controllers/UserController");
 const checkValidation = require("../middlewares/checkValidation");
-const createController = require("../controllers/createController");
-const myBlogsController = require("../controllers/myBlogsController");
-const likeController = require("../controllers/likeController");
-const findController = require("../controllers/findController");
-const updateController = require("../controllers/updateController");
-const blogsController = require("../controllers/blogsController");
+const validateUser = require("../middlewares/validateUser");
+const loginController = require("../controllers/loginController");
 const authenticateToken = require("../middlewares/authenticateToken");
-const deleteController = require("../controllers/deleteController");
+const signupController = require("../controllers/signupController");
+const { param,body } = require("express-validator");
 
-router.post("/signup", validateUser, checkValidation, signupController);
+router.post("/login", checkValidation, validateUser, loginController);
+router.post("/signup", signupController);
+router.get("/blogs", authenticateToken, userController.blogsController);
+router.delete("/posts/:id", authenticateToken, userController.deleteController);
+router.post(
+  "/create",
+  authenticateToken,
+  [
+    body("title").notEmpty().withMessage("Title is required"),
+    body("description").notEmpty().withMessage("Description is required"),
+    body("firebaseimage")
+      .notEmpty()
+      .withMessage("Firebase image URL is required"),
+    body("user").notEmpty().withMessage("User is required"),
+    body("email").isEmail().withMessage("Valid email is required"),
+  ],
+  userController.createController
+);
 
-router.post("/login", loginController);
+router.get(
+  "/blogs/:id",
+  authenticateToken,
+  [param("id").notEmpty().withMessage("ID parameter is required")],
+  userController.findBlogController
+);
+router.patch("/like", authenticateToken, userController.likeController);
+router.get("/myblogs", authenticateToken, userController.myBlogsController);
+router.patch("/update/:id", authenticateToken, userController.updateController);
 
-router.post("/create", authenticateToken, createController);
-
-router.get("/myblogs", authenticateToken, myBlogsController);
-
-router.patch("/like", authenticateToken, likeController);
-
-router.get("/findblog/:id", authenticateToken, findController);
-
-router.patch("/update/:id", authenticateToken, updateController);
-
-router.get("/blogs", authenticateToken, blogsController);
-
-router.delete('/delete/:id',authenticateToken,deleteController);
 module.exports = router;
