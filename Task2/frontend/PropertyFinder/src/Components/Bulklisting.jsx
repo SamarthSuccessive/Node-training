@@ -38,9 +38,7 @@ function Bulk_Listing() {
         );
         if(response.status===403)
       {
-        localStorage.removeItem("token");
-        localStorage.removeItem("name");
-        localStorage.removeItem("email");
+        localStorage.clear();
         navigate("/");
       }
       if (!response.ok) {

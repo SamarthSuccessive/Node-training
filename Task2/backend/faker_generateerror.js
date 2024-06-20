@@ -21,7 +21,6 @@ for (let i = 0; i < numberOfEntries; i++) {
   let owner = faker.person.fullName();
   let price = faker.number.int({ min: 1000, max: 100000 });
 
-  // Introduce some redundancy and errors
   if (i % 10 === 0) {
     name = ""; 
     description = ""; 

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import SideNavbar from "./SideNavbar"; // Assuming SideNavbar.js is in the same directory
 import {
@@ -10,7 +11,7 @@ import {
   Paper,
   TablePagination,
 } from "@mui/material";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 function Logs() {
   const [data, setData] = useState([]);
@@ -18,6 +19,7 @@ function Logs() {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [totalCount, setTotalCount] = useState(0);
   const { uploadId } = useParams();
+  const navigate=useNavigate();
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -31,6 +33,11 @@ function Logs() {
             },
           }
         );
+        if(response.status===403)
+        {
+          localStorage.clear();
+          navigate("/");
+        }
         const responseData = await response.json();
         setData(responseData.data);
         setTotalCount(responseData.datalength);
@@ -79,7 +86,7 @@ function Logs() {
                   <TableCell sx={{ fontSize: 16, fontWeight: 400 }}>
                     <TableCell sx={{ fontSize: 16, fontWeight: 400 }}>
                       {row.errormessage.map((message, idx) => (
-                        <div key={idx}>{`${String.fromCharCode(
+                        <div key={`${row._id}-${idx}`}>{`${String.fromCharCode(
                           97 + idx
                         )} - ${message}`}</div>
                       ))}

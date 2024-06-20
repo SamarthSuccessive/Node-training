@@ -210,11 +210,12 @@ class ModuleController {
     }
   }
 
-  static insertintodataArray(row, data) {
+  static insertintodataArray(row, data,email) {
     logger.info("Controller insertintoarray ");
-    const { email } = req.body.email;
+    const  emailid  = email;
+
     data.push({
-      email: email,
+      email: emailid,
       name: row.name ?? "",
       address: {
         street: row["address.street"] ?? "",
@@ -242,6 +243,14 @@ class ModuleController {
 
       logger.info("Controller upload ");
       const fileName = req.file?.filename;
+      // console.log("functionrequest"+req.body);
+
+      // console.log("function"+req.body.email);
+
+      const email=req.body.email;
+      // console.log("funsssssction"+req.body.email);
+
+      console.log(fileName);
       if (!fileName) {
         return res
           .status(400)
@@ -257,7 +266,7 @@ class ModuleController {
             .send(SystemResponse.getErrorResponse(error.message, error));
         })
         .on("data", (row) => {
-          ModuleController.insertintodataArray(row, data);
+          ModuleController.insertintodataArray(row, data,email);
         })
         .on("end", async () => {
           data.forEach((item, index) => {
@@ -296,6 +305,7 @@ class ModuleController {
             .send(SystemResponse.success("File uploaded Successfully"));
         });
     } catch (error) {
+      console.log(error);
       logger.error(`Error in upload file api: ${error}`);
       return res
         .status(500)

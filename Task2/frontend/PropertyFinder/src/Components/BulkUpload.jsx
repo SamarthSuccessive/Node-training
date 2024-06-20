@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Typography, Container, CssBaseline, TextField } from '@mui/material';
+import { Box, Typography, Container, CssBaseline, TextField, CircularProgress } from '@mui/material';
 import { styled } from '@mui/system';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -34,6 +34,7 @@ const OuterDiv = styled('div')({
 
 const BulkUpload = () => {
   const [file, setFile] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleFileChange = (event) => {
@@ -46,23 +47,22 @@ const BulkUpload = () => {
       return;
     }
 
+    setLoading(true);
+
     const formData = new FormData();
     formData.append('file', file);
 
     try {
-        const token = localStorage.getItem("token");
+      const token = localStorage.getItem("token");
       const response = await fetch('http://localhost:4000/v1/uploadfile', {
         method: 'POST',
         headers: {
-            Authorization: token,
-          },
+          Authorization: token,
+        },
         body: formData,
       });
-      if(response.status===403)
-      {
-        localStorage.removeItem("token");
-        localStorage.removeItem("name");
-        localStorage.removeItem("email");
+      if (response.status === 403) {
+        localStorage.clear();
         navigate("/");
       }
       if (response.ok) {
@@ -75,6 +75,8 @@ const BulkUpload = () => {
     } catch (error) {
       toast.error('Error uploading file!');
       console.error('Error uploading file:', error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -112,7 +114,7 @@ const BulkUpload = () => {
                   color: '#337ab7',
                   borderColor: '#337ab7',
                   '&.Mui-disabled': {
-                    '-webkit-text-fill-color': '#337ab7', 
+                    '-webkit-text-fill-color': '#337ab7',
                   },
                   '& fieldset': {
                     borderColor: '#337ab7',
@@ -127,8 +129,9 @@ const BulkUpload = () => {
             onClick={handleUpload}
             startIcon={<CloudUploadIcon />}
             sx={{ mt: 3, bgcolor: '#337ab7' }}
+            disabled={loading}
           >
-            Upload
+            {loading ? <CircularProgress size={24} color="inherit" /> : 'Upload'}
           </Button>
         </Box>
       </Container>

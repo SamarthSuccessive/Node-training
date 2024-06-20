@@ -13,7 +13,6 @@ import { useNavigate } from "react-router-dom";
 import SideNavbar from "./SideNavbar";
 import { toast } from "react-toastify";
 
-
 const Create = () => {
   const [formData, setFormData] = useState({
     name: "",
@@ -63,35 +62,60 @@ const Create = () => {
 
   const validateForm = () => {
     const Errorsobj = {};
-    if (!formData.name || formData.name.length < 5)
-      Errorsobj.name = "Name must be at least 5 characters long";
-    if (!formData.address.street) Errorsobj.street = "Street is required";
-    if (!formData.address.city) Errorsobj.city = "City is required";
-    if (!formData.address.state) Errorsobj.state = "State is required";
-    if (!formData.address.pinCode) Errorsobj.pinCode = "Pin Code is required";
-    if (
-      !formData.description ||
-      formData.description.length < 20 ||
-      formData.description.length > 1000
-    )
-      Errorsobj.description =
-        "Description must be between 20 and 100 characters";
-    if (!formData.startDate) {
-      Errorsobj.startDate = "Start Date is required";
-    }
-    if (!formData.endDate) {
-      Errorsobj.endDate = "End Date is required";
-    } else if (new Date(formData.endDate) <= new Date(formData.startDate)) {
-      Errorsobj.endDate = "End Date must be after Start Date";
-    }
-    if (!formData.Bhktype || formData.Bhktype.length < 3)
-      Errorsobj.Bhktype = "BHK type must be at least 3 characters long";
-    if (!formData.owner || formData.owner.length < 3)
-      Errorsobj.owner = "Owner must be at least 3 characters long";
-    if (!formData.price || formData.price < 3)
-      Errorsobj.price = "Price must be at least 3";
+
+    validateName(formData.name, Errorsobj);
+    validateAddress(formData.address, Errorsobj);
+    validateDescription(formData.description, Errorsobj);
+    validateDates(formData.startDate, formData.endDate, Errorsobj);
+    validateBhktype(formData.Bhktype, Errorsobj);
+    validateOwner(formData.owner, Errorsobj);
+    validatePrice(formData.price, Errorsobj);
+
     setErrors(Errorsobj);
     return Object.keys(Errorsobj).length === 0;
+  };
+
+  const validateName = (name, errors) => {
+    if (!name || name.length < 5)
+      errors.name = "Name must be at least 5 characters long";
+  };
+
+  const validateAddress = (address, errors) => {
+    if (!address.street) errors.street = "Street is required";
+    if (!address.city) errors.city = "City is required";
+    if (!address.state) errors.state = "State is required";
+    if (!address.pinCode) errors.pinCode = "Pin Code is required";
+  };
+
+  const validateDescription = (description, errors) => {
+    if (!description || description.length < 20 || description.length > 1000) {
+      errors.description = "Description must be between 20 and 100 characters";
+    }
+  };
+
+  const validateDates = (startDate, endDate, errors) => {
+    if (!startDate) {
+      errors.startDate = "Start Date is required";
+    }
+    if (!endDate) {
+      errors.endDate = "End Date is required";
+    } else if (new Date(endDate) <= new Date(startDate)) {
+      errors.endDate = "End Date must be after Start Date";
+    }
+  };
+
+  const validateBhktype = (Bhktype, errors) => {
+    if (!Bhktype || Bhktype.length < 3)
+      errors.Bhktype = "BHK type must be at least 3 characters long";
+  };
+
+  const validateOwner = (owner, errors) => {
+    if (!owner || owner.length < 3)
+      errors.owner = "Owner must be at least 3 characters long";
+  };
+
+  const validatePrice = (price, errors) => {
+    if (!price || price < 3) errors.price = "Price must be at least 3";
   };
 
   const handleSubmit = async (e) => {
@@ -110,11 +134,8 @@ const Create = () => {
         body: JSON.stringify(formData),
       });
 
-      if(response.status===403)
-      {
-        localStorage.removeItem("token");
-        localStorage.removeItem("name");
-        localStorage.removeItem("email");
+      if (response.status === 403) {
+        localStorage.clear();
         navigate("/");
       }
       if (!response.ok) {
@@ -271,12 +292,12 @@ const Create = () => {
               <Grid item xs={6}>
                 <MobileDatePicker
                   label="End Date"
-                  value={formData.endDate}  
+                  value={formData.endDate}
                   onChange={(newValue) => handleDateChange("endDate", newValue)}
                   textField={(props) => (
                     <TextField
                       {...props}
-                      fullWidth
+                      fullWidth 
                       error={!!errors.endDate}
                       helperText={errors.endDate}
                     />

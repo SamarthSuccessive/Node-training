@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Drawer,
   List,
@@ -17,21 +17,28 @@ import Logo from "../image/Logo2.jpg";
 
 const SideNavbar = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const handleNavigation = (path, index) => {
-    setSelectedIndex(index);
-    console.log(selectedIndex);
+  useEffect(() => {
+    if (location.pathname === "/list") {
+      setSelectedIndex(0);
+    } else if (location.pathname === "/bulk-listing") {
+      setSelectedIndex(1);
+    } else if (location.pathname === "/") {
+      setSelectedIndex(2);
+    }
+  }, [location.pathname]);
+
+  const handleNavigation = (path) => {
     navigate(path);
   };
- 
+
   const accountname = localStorage.getItem("name");
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("name");
-    localStorage.removeItem("email");
-    handleNavigation("/", 2);
+    localStorage.clear();
+    handleNavigation("/");
   };
 
   return (
@@ -74,14 +81,14 @@ const SideNavbar = () => {
                 fontSize: "1.2rem",
               }}
             >
-              {accountname.toUpperCase()}
+              {accountname?.toUpperCase()}
             </Typography>
           </div>
         </ListItem>
         <Divider sx={{ backgroundColor: "#444" }} />
         <ListItem
           component="div"
-          onClick={() => handleNavigation("/list", 0)}
+          onClick={() => handleNavigation("/list")}
           sx={{
             "&:hover": {
               backgroundColor: "#386aa5",
@@ -112,7 +119,7 @@ const SideNavbar = () => {
         </ListItem>
         <ListItem
           component="div"
-          onClick={() => handleNavigation("/bulk-listing", 1)}
+          onClick={() => handleNavigation("/bulk-listing")}
           sx={{
             "&:hover": {
               backgroundColor: "#386aa5",

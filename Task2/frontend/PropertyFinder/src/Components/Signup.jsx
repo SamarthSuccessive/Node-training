@@ -7,8 +7,7 @@ import {
   Box,
   Grid,
 } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -22,8 +21,9 @@ const Signup = () => {
   const [passwordError, setPasswordError] = useState("");
   const [confirmPasswordError, setConfirmPasswordError] = useState("");
   const [signupError, setSignupError] = useState("");
+
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*])/;
+  const passwordRegex = /^(?=.*[a-zA-Z])(?=.*\d)(?=.*[!@#$%^&*]).{8,}$/;
 
   const navigate = useNavigate();
 
@@ -46,13 +46,9 @@ const Signup = () => {
   };
 
   const validatePassword = (password) => {
-    if (password.length < 8) {
-      setPasswordError("Password must be at least 8 characters long");
-      return false;
-    }
     if (!passwordRegex.test(password)) {
       setPasswordError(
-        "Password must contain at least one letter, one number, and one special character"
+        "Password must be at least 8 characters long and contain at least one letter, one number, and one special character"
       );
       return false;
     }
