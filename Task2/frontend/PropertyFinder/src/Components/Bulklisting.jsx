@@ -36,6 +36,7 @@ function Bulk_Listing() {
             },
           }
         );
+
         if(response.status===403)
       {
         localStorage.clear();
@@ -126,7 +127,7 @@ function Bulk_Listing() {
                       component={Link}
                       to={`/logs/${row._id}`}
                       aria-label="view"
-                      sx={{ color: "#337ab7", "&:hover": { color: "#00033" } }}
+                      sx={{ color: "#337ab7", "&:hover": { color: "#  00033" } }}
                     >
                       <VisibilityIcon />
                     </IconButton>
@@ -142,7 +143,7 @@ function Bulk_Listing() {
           page={page - 1}
           onPageChange={(e, newPage) => setPage(newPage + 1)}
           rowsPerPage={rowsPerPage}
-          onRowsPerPageChange={(e) => {
+          onRowsPerPageChange={(e) => { 
             setRowsPerPage(parseInt(e.target.value));
             setPage(1);
           }}

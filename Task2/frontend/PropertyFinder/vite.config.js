@@ -1,5 +1,5 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react-swc'
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react-swc";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -7,6 +7,20 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "jsdom",
-    setupFiles: ["src/setupTests.js"],
+    setupFiles: ["src/setupTest.js"],
+    coverage: {
+      provider: "istanbul",
+      include: ["src/**/*.jsx"],
+      exclude: ["src/main.jsx"],
+      reporter: ["text", "html", "json", "lcov"],
+      enabled: true,
+      reportOnFailure: true,
+    },
+    // coverage: {
+    //   exclude: [
+
+    //
+    //   ]
+    // }
   },
-})
+});

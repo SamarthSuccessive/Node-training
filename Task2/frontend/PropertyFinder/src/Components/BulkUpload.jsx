@@ -65,12 +65,13 @@ const BulkUpload = () => {
         localStorage.clear();
         navigate("/");
       }
+      const data=await response.json();
       if (response.ok) {
         toast.success('File uploaded successfully!');
         navigate('/list');
       } else {
         toast.error('Error uploading file!');
-        console.error('Error uploading file:', response.statusText);
+        console.error('Error uploading file:', response.status);
       }
     } catch (error) {
       toast.error('Error uploading file!');

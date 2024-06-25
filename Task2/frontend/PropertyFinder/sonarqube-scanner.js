@@ -5,9 +5,9 @@ scanner(
     serverUrl: "http://localhost:9000",
     login: "admin",
     token: process.env.REACT_APP_TOKEN,
-    // options: {
-    //   "sonar.sources": "src",
-    // },
+    options: {
+      "sonar.sources": "/src"
+    },
   },
   () => process.exit()
 );

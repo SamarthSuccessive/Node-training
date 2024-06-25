@@ -99,7 +99,7 @@ function ListPage() {
                   <em>None</em>
                 </MenuItem>
                 <MenuItem value="1BHK">1BHK</MenuItem>
-                <MenuItem value="2BHK">2BHK</MenuItem>
+                <MenuItem value="2BHK"> 2BHK</MenuItem>
                 <MenuItem value="3BHK">3BHK</MenuItem>
                 <MenuItem value="4BHK">4BHK</MenuItem>
                 <MenuItem value="5BHK">5BHK</MenuItem>

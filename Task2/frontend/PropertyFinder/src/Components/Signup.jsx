@@ -90,12 +90,11 @@ const Signup = () => {
           },
           body: JSON.stringify({ name, email, password }),
         });
-
         if (response.status === 500) {
           const errorData = await response.json();
           setSignupError(errorData.message || "Signup failed");
           toast.error(errorData.message || "Signup failed");
-        } else {
+        } else if(response.status===201) {
           toast.success("Signup successful");
           setSignupError("");
           navigate("/");
@@ -103,7 +102,7 @@ const Signup = () => {
       }
     } catch (error) {
       setSignupError("Something Went Wrong! Please try again later.");
-      toast.error("Something Went Wrong! . Please try again later.");
+      toast.error("Something Went Wrong!");
     }
   };
 

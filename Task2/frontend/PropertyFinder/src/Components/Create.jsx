@@ -54,6 +54,7 @@ const Create = () => {
   };
 
   const handleDateChange = (name, value) => {
+    // console.log("name value", value);
     setFormData((prevState) => ({
       ...prevState,
       [name]: value,
@@ -95,9 +96,13 @@ const Create = () => {
 
   const validateDates = (startDate, endDate, errors) => {
     if (!startDate) {
+      console.log(startDate);
+
+      //yahan dekhna hai n this component
       errors.startDate = "Start Date is required";
     }
     if (!endDate) {
+      console.log("he", endDate);
       errors.endDate = "End Date is required";
     } else if (new Date(endDate) <= new Date(startDate)) {
       errors.endDate = "End Date must be after Start Date";
@@ -119,8 +124,10 @@ const Create = () => {
   };
 
   const handleSubmit = async (e) => {
+    console.log(">>>>>>>>>>>>>>>>", validateForm());
     e.preventDefault();
     if (validateForm() === false) return;
+    console.log(">>>>>>>>>>>>>>>>hhhhh");
 
     try {
       const token = localStorage.getItem("token");
@@ -133,7 +140,7 @@ const Create = () => {
         },
         body: JSON.stringify(formData),
       });
-
+      console.log(">>>>>>>>>>>>>>>>>" + response);
       if (response.status === 403) {
         localStorage.clear();
         navigate("/");
@@ -285,7 +292,7 @@ const Create = () => {
                       error={!!errors.startDate}
                       helperText={errors.startDate}
                     />
-                  )}
+                  )}  
                   inputFormat="DD/MM/YYYY"
                 />
               </Grid>
@@ -297,7 +304,7 @@ const Create = () => {
                   textField={(props) => (
                     <TextField
                       {...props}
-                      fullWidth 
+                      fullWidth
                       error={!!errors.endDate}
                       helperText={errors.endDate}
                     />

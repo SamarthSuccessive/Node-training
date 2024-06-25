@@ -186,14 +186,14 @@ const Edit = () => {
         localStorage.clear();
         navigate("/");
       }
+
       if (!response.ok) {
         throw new Error("Something went wrong");
       }
-
       toast.success("Update Successfully");
       navigate("/list");
     } catch (error) {
-      console.error("Fetch error:", error);
+      toast.error("Fetch error");
     }
   };
 
